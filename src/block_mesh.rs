@@ -14,7 +14,18 @@ pub enum BlockSide {
     Left,
     Right,
     Top,
-    Bottom
+    Bottom,
+}
+
+impl BlockSide {
+    pub fn all_sides() -> Self {
+        BlockSide::Front
+            | BlockSide::Back
+            | BlockSide::Left
+            | BlockSide::Right
+            | BlockSide::Top
+            | BlockSide::Bottom
+    }
 }
 
 #[derive(Debug, Resource, TypeUuid)]
@@ -30,43 +41,38 @@ impl BlockMeshStorage {
         ([1.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 1.0]),
         ([1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [1.0, 0.0]),
         ([0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0]),
-
         // Back
         ([1.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [0.0, 1.0]),
         ([0.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [1.0, 1.0]),
         ([0.0, 1.0, 1.0], [-1.0, 0.0, 0.0], [1.0, 0.0]),
         ([1.0, 1.0, 1.0], [-1.0, 0.0, 0.0], [0.0, 0.0]),
-
         // Left
         ([0.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [0.0, 1.0]),
         ([0.0, 0.0, 0.0], [-1.0, 0.0, 0.0], [1.0, 1.0]),
         ([0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [1.0, 0.0]),
         ([0.0, 1.0, 1.0], [-1.0, 0.0, 0.0], [0.0, 0.0]),
-
         // Right
         ([1.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0]),
         ([1.0, 0.0, 1.0], [1.0, 0.0, 0.0], [1.0, 1.0]),
         ([1.0, 1.0, 1.0], [1.0, 0.0, 0.0], [1.0, 0.0]),
         ([1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0]),
-
         // Top
         ([0.0, 1.0, 0.0], [0.0, 1.0, 0.0], [0.0, 1.0]),
         ([1.0, 1.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0]),
         ([1.0, 1.0, 1.0], [0.0, 1.0, 0.0], [1.0, 0.0]),
         ([0.0, 1.0, 1.0], [0.0, 1.0, 0.0], [0.0, 0.0]),
-
         // Bottom
         ([0.0, 0.0, 1.0], [0.0, -1.0, 0.0], [0.0, 1.0]),
         ([1.0, 0.0, 1.0], [0.0, -1.0, 0.0], [1.0, 1.0]),
         ([1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [1.0, 0.0]),
         ([0.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0]),
     ];
-    const FRONT_INDICES  : [u16; 6] = [1, 0, 2, 2, 0, 3];
-    const BACK_INDICES   : [u16; 6] = [5, 4, 6, 6, 4, 7];
-    const LEFT_INDICES   : [u16; 6] = [9, 8, 10, 10, 8, 11];
-    const RIGHT_INDICES  : [u16; 6] = [13, 12, 14, 14, 12, 15];
-    const TOP_INDICES    : [u16; 6] = [17, 16, 18, 18, 16, 19];
-    const BOTTOM_INDICES : [u16; 6] = [21, 20, 22, 22, 20, 23];
+    const FRONT_INDICES: [u16; 6] = [1, 0, 2, 2, 0, 3];
+    const BACK_INDICES: [u16; 6] = [5, 4, 6, 6, 4, 7];
+    const LEFT_INDICES: [u16; 6] = [9, 8, 10, 10, 8, 11];
+    const RIGHT_INDICES: [u16; 6] = [13, 12, 14, 14, 12, 15];
+    const TOP_INDICES: [u16; 6] = [17, 16, 18, 18, 16, 19];
+    const BOTTOM_INDICES: [u16; 6] = [21, 20, 22, 22, 20, 23];
 
     pub fn new() -> Self {
         Self {
@@ -76,12 +82,7 @@ impl BlockMeshStorage {
 
     pub fn generate_meshes(&mut self, mesh_assets: &mut ResMut<Assets<Mesh>>) {
         let mask_min: u8 = BlockSide::Front.bits();
-        let mask_max: u8 = BlockSide::Front
-            .or(BlockSide::Back)
-            .or(BlockSide::Left)
-            .or(BlockSide::Right)
-            .or(BlockSide::Top)
-            .or(BlockSide::Bottom).bits();
+        let mask_max: u8 = BlockSide::all_sides().bits();
 
         let meshes = (mask_min..=mask_max)
             .into_par_iter()
@@ -165,19 +166,14 @@ impl BlockMeshStorage {
     pub fn get_mesh(&self, sides: BlockSide) -> Option<Handle<Mesh>> {
         let bits: u8 = sides.bits();
 
-        self.meshes.get(&bits).map(|handle_ref| handle_ref.clone_weak())
+        self.meshes
+            .get(&bits)
+            .map(|handle_ref| handle_ref.clone_weak())
     }
 
     #[allow(dead_code)]
     pub fn get_full(&self) -> Option<Handle<Mesh>> {
-        let sides = BlockSide::Front
-            .or(BlockSide::Back)
-            .or(BlockSide::Left)
-            .or(BlockSide::Right)
-            .or(BlockSide::Top)
-            .or(BlockSide::Bottom);
-
-        dbg!(sides);
+        let sides = BlockSide::all_sides();
 
         self.get_mesh(sides)
     }

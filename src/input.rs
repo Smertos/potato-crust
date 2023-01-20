@@ -1,4 +1,9 @@
-use bevy::{prelude::*, input::keyboard::KeyboardInput, app::AppExit, window::{CursorGrabMode, WindowFocused}};
+use bevy::{
+    app::AppExit,
+    input::keyboard::KeyboardInput,
+    prelude::*,
+    window::{CursorGrabMode, WindowFocused},
+};
 use num_enum::IntoPrimitive;
 
 #[allow(dead_code)]

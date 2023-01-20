@@ -1,4 +1,8 @@
-use bevy::{prelude::*, render::render_resource::{AsBindGroup, ShaderRef}, reflect::TypeUuid};
+use bevy::{
+    prelude::*,
+    reflect::TypeUuid,
+    render::render_resource::{AsBindGroup, ShaderRef},
+};
 
 #[derive(AsBindGroup, TypeUuid, Clone)]
 #[uuid = "e0d30bdd-5f30-4a7d-86f3-b443fcfb4e53"]

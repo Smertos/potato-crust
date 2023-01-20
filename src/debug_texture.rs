@@ -1,11 +1,17 @@
-use bevy::{prelude::*, render::{render_resource::{Extent3d, TextureDimension, TextureFormat}, texture::ImageSampler}};
+use bevy::{
+    prelude::*,
+    render::{
+        render_resource::{Extent3d, TextureDimension, TextureFormat},
+        texture::ImageSampler,
+    },
+};
 
 /// Creates a colorful test pattern
 pub fn uv_debug_texture() -> Image {
     const TEXTURE_SIZE: usize = 16;
 
     let color_black: [u8; 4] = [0, 0, 0, 255];
-    let color_purle: [u8; 4] = [165, 6, 155, 255];
+    let color_purple: [u8; 4] = [165, 6, 155, 255];
 
     let mut texture_data = [0; TEXTURE_SIZE * TEXTURE_SIZE * 4];
 
@@ -16,7 +22,7 @@ pub fn uv_debug_texture() -> Image {
             if (x <= 7 && y <= 7) || (x > 7 && y > 7) {
                 texture_data[offset..(offset + 4)].copy_from_slice(&color_black);
             } else {
-                texture_data[offset..(offset + 4)].copy_from_slice(&color_purle);
+                texture_data[offset..(offset + 4)].copy_from_slice(&color_purple);
             }
         }
     }

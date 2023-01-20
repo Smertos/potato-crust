@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
+
 use crate::block_material::BlockMaterial;
 
 #[derive(Component, Clone)]
@@ -15,11 +16,15 @@ pub struct BlockTexture {
 }
 
 impl BlockTexture {
-    pub fn new(name: impl Into<String>, material: Handle<BlockMaterial>, texture: Handle<Image>) -> Self {
+    pub fn new(
+        name: impl Into<String>,
+        material: Handle<BlockMaterial>,
+        texture: Handle<Image>,
+    ) -> Self {
         Self {
             name: BlockTextureName(name.into()),
             material,
-            texture
+            texture,
         }
     }
 }

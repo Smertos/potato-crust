@@ -1,6 +1,5 @@
+use bevy::{input::mouse::MouseMotion, prelude::*};
 use std::f32::consts::PI;
-
-use bevy::{prelude::*, input::mouse::MouseMotion};
 
 use crate::input::ScanKey;
 
@@ -15,7 +14,7 @@ pub struct CameraController {
 }
 
 impl CameraController {
-    pub fn new(fly_speed: f32, sensitivity: f32,) -> Self {
+    pub fn new(fly_speed: f32, sensitivity: f32) -> Self {
         Self {
             fly_speed,
             initialized: false,
@@ -34,17 +33,14 @@ fn setup_camera(mut commands: Commands) {
     };
     let camera_controller = CameraController::new(4.0, 0.4);
 
-    commands.spawn((
-        camera_controller,
-        camera_3d_bundle,
-    ));
+    commands.spawn((camera_controller, camera_3d_bundle));
 }
 
 pub fn camera_input(
     keys: Res<Input<ScanCode>>,
     time: Res<Time>,
     mut mouse_events: EventReader<MouseMotion>,
-    mut query: Query<(&mut CameraController, &mut Transform), With<Camera>>
+    mut query: Query<(&mut CameraController, &mut Transform), With<Camera>>,
 ) {
     let dt = time.delta_seconds();
 
@@ -88,7 +84,11 @@ pub fn camera_input(
         }
 
         if axis_input != Vec3::ZERO {
-            let max_speed = if is_running { 2.0 * controller.fly_speed } else { controller.fly_speed };
+            let max_speed = if is_running {
+                2.0 * controller.fly_speed
+            } else {
+                controller.fly_speed
+            };
 
             controller.velocity = axis_input.normalize() * max_speed;
         } else {
@@ -109,14 +109,19 @@ pub fn camera_input(
         }
 
         if mouse_delta != Vec2::ZERO {
-            controller.pitch = (controller.pitch - mouse_delta.y * 0.5 * controller.sensitivity * dt)
-                .clamp(-PI / 2.0, PI / 2.0);
-            controller.yaw -= mouse_delta.x * controller.sensitivity * dt;
+            let sens_dt = controller.sensitivity * dt;
+            let new_pitch = controller.pitch - mouse_delta.y * 0.5 * sens_dt;
+            let new_yaw_offset = mouse_delta.x * sens_dt;
 
-            transform.rotation = Quat::from_euler(EulerRot::ZYX, 0.0, controller.yaw, controller.pitch);
+            controller.pitch = new_pitch.clamp(-PI / 2.0, PI / 2.0);
+            controller.yaw -= new_yaw_offset;
+
+            transform.rotation =
+                Quat::from_euler(EulerRot::ZYX, 0.0, controller.yaw, controller.pitch);
         }
 
-        dbg!(transform.translation);
+        // TODO: move to UI
+        debug!("X: {:.2}, Y: {:.2}, Z: {:.2}", transform.translation.x, transform.translation.y, transform.translation.z);
     }
 }
 
@@ -125,8 +130,7 @@ pub struct GameplayCameraPlugin;
 
 impl Plugin for GameplayCameraPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_startup_system(setup_camera)
+        app.add_startup_system(setup_camera)
             .add_system(camera_input);
     }
 }

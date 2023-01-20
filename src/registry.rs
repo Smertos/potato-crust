@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::utils::HashMap;
 use thiserror::Error;
+
 use crate::block_texture::BlockTexture;
 
 #[derive(Debug, Error)]
@@ -28,7 +29,11 @@ impl<T: Asset> Registry<T> {
     }
 
     #[allow(dead_code)]
-    pub fn insert(&mut self, asset_name: impl Into<String>, asset: Handle<T>) -> Result<(), RegistryError> {
+    pub fn insert(
+        &mut self,
+        asset_name: impl Into<String>,
+        asset: Handle<T>,
+    ) -> Result<(), RegistryError> {
         let asset_name: String = asset_name.into();
 
         if !self.data.contains_key(&asset_name) {
@@ -54,7 +59,11 @@ macro_rules! make_registry {
             }
 
             #[allow(dead_code)]
-            pub fn insert(&mut self, asset_name: impl Into<String>, asset: Handle<$asset>) -> Result<(), RegistryError> {
+            pub fn insert(
+                &mut self,
+                asset_name: impl Into<String>,
+                asset: Handle<$asset>,
+            ) -> Result<(), RegistryError> {
                 self.0.insert(asset_name, asset)
             }
         }
@@ -64,11 +73,15 @@ macro_rules! make_registry {
                 $name(Registry::<$asset>::new(None))
             }
         }
-    }
+    };
 }
 
 // TODO: automate struct & Default impl below with a macro
-make_registry!(BlockTextureRegistry, BlockTexture, "19d77a98-2675-4306-ab3c-ddc39ada1ffd");
+make_registry!(
+    BlockTextureRegistry,
+    BlockTexture,
+    "19d77a98-2675-4306-ab3c-ddc39ada1ffd"
+);
 
 // #[derive(Resource, TypeUuid)]
 // #[uuid = "19d77a98-2675-4306-ab3c-ddc39ada1ffd"]
