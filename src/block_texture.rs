@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 
-use crate::block_material::BlockMaterial;
+use crate::material::block_material::BlockMaterial;
 
 #[derive(Component, Clone)]
 pub struct BlockTextureName(String);

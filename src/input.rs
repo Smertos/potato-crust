@@ -86,12 +86,10 @@ pub fn mouse_grab_input(
         }
     }
 
-    if !is_grabbed.deref().0 && mouse_buttons.just_pressed(MouseButton::Left.into()) {
+    if !is_grabbed.deref().0 && mouse_buttons.just_pressed(MouseButton::Left) {
         window.set_cursor_grab_mode(CursorGrabMode::Confined);
         window.set_cursor_visibility(false);
 
         *is_grabbed = IsGrabbed(true);
-
-        return;
     }
 }

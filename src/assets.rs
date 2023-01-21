@@ -1,9 +1,9 @@
 use bevy::asset::LoadState;
 use bevy::prelude::*;
 
-use crate::block_material::BlockMaterial;
 use crate::block_mesh::BlockMeshStorage;
 use crate::block_texture::BlockTexture;
+use crate::material::block_material::BlockMaterial;
 use crate::registry::BlockTextureRegistry;
 use crate::states::GameState;
 

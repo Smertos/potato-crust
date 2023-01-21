@@ -5,22 +5,22 @@ use input::mouse_grab_input;
 use tracing::Level;
 
 mod assets;
-mod block_material;
 mod block_mesh;
 mod block_texture;
 mod camera;
 mod debug_texture;
 mod input;
+mod material;
 mod registry;
 mod states;
 
 use crate::assets::{GameAssetsLabel, GameAssetsPlugin};
-use crate::block_material::{BlockBundle, BlockMaterial};
 use crate::block_mesh::{BlockMeshStorage, BlockSide};
 use crate::block_texture::BlockTexture;
 use crate::camera::GameplayCameraPlugin;
 use crate::debug_texture::uv_debug_texture;
 use crate::input::keyboard_input;
+use crate::material::block_material::{BlockBundle, BlockMaterial};
 use crate::registry::BlockTextureRegistry;
 use crate::states::GameState;
 
