@@ -20,10 +20,6 @@ impl Material for BlockMaterial {
     fn fragment_shader() -> ShaderRef {
         "shaders/block-fragment.wgsl".into()
     }
-
-    // fn vertex_shader() -> ShaderRef {
-    //     "shaders/block-vertex.wgsl".into()
-    // }
 }
 
 impl From<Handle<Image>> for BlockMaterial {

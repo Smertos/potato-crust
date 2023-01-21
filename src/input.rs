@@ -5,6 +5,7 @@ use bevy::{
     window::{CursorGrabMode, WindowFocused},
 };
 use num_enum::IntoPrimitive;
+use std::ops::Deref;
 
 #[allow(dead_code)]
 #[derive(IntoPrimitive)]
@@ -50,16 +51,23 @@ pub fn keyscan_input(mut key_event_reader: EventReader<KeyboardInput>) {
     }
 }
 
+#[derive(Default)]
+pub struct IsGrabbed(bool);
+
 pub fn mouse_grab_input(
     mut windows: ResMut<Windows>,
     keys: Res<Input<ScanCode>>,
+    mouse_buttons: Res<Input<MouseButton>>,
     mut event_render: EventReader<WindowFocused>,
+    mut is_grabbed: Local<IsGrabbed>,
 ) {
     let window = windows.get_primary_mut().unwrap();
 
-    if keys.pressed(ScanKey::Alt.into()) {
+    if is_grabbed.deref().0 && keys.pressed(ScanKey::Alt.into()) {
         window.set_cursor_grab_mode(CursorGrabMode::None);
         window.set_cursor_visibility(true);
+
+        *is_grabbed = IsGrabbed(false);
 
         return;
     }
@@ -68,9 +76,22 @@ pub fn mouse_grab_input(
         if event.focused {
             window.set_cursor_grab_mode(CursorGrabMode::Confined);
             window.set_cursor_visibility(false);
+
+            *is_grabbed = IsGrabbed(true);
         } else if keys.just_released(ScanKey::Escape.into()) {
             window.set_cursor_grab_mode(CursorGrabMode::None);
             window.set_cursor_visibility(true);
+
+            *is_grabbed = IsGrabbed(false);
         }
+    }
+
+    if !is_grabbed.deref().0 && mouse_buttons.just_pressed(MouseButton::Left.into()) {
+        window.set_cursor_grab_mode(CursorGrabMode::Confined);
+        window.set_cursor_visibility(false);
+
+        *is_grabbed = IsGrabbed(true);
+
+        return;
     }
 }

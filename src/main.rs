@@ -12,6 +12,7 @@ mod camera;
 mod debug_texture;
 mod input;
 mod registry;
+mod states;
 
 use crate::assets::{GameAssetsLabel, GameAssetsPlugin};
 use crate::block_material::{BlockBundle, BlockMaterial};
@@ -21,6 +22,7 @@ use crate::camera::GameplayCameraPlugin;
 use crate::debug_texture::uv_debug_texture;
 use crate::input::keyboard_input;
 use crate::registry::BlockTextureRegistry;
+use crate::states::GameState;
 
 fn setup(
     mut commands: Commands,
@@ -38,8 +40,6 @@ fn setup(
         .and_then(|block_texture| block_textures.get(&block_texture))
         .map(|block_texture| block_texture.material.clone())
         .unwrap_or_else(|| debug_material.clone());
-
-    dbg!(&block_mesh_storage);
 
     const LIMIT: i32 = 16;
 
@@ -106,16 +106,22 @@ fn main() {
                 .set(AssetPlugin {
                     watch_for_changes: true,
                     ..Default::default()
-                }),
+                })
+                .set(ImagePlugin::default_nearest()),
         )
         .add_plugin(LogDiagnosticsPlugin::default())
         // .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(MaterialPlugin::<BlockMaterial>::default())
         .add_plugin(GameAssetsPlugin)
         .add_plugin(GameplayCameraPlugin::default())
-        .add_startup_system(setup.after(GameAssetsLabel::Loading))
-        .add_system(mouse_grab_input)
-        .add_system(keyboard_input)
-        // .add_system(keyscan_input)
+        .add_system_set(
+            SystemSet::on_enter(GameState::InGame)
+                .with_system(setup.after(GameAssetsLabel::Loading)),
+        )
+        .add_system_set(
+            SystemSet::on_update(GameState::InGame)
+                .with_system(mouse_grab_input)
+                .with_system(keyboard_input), // .with_system(keyscan_input)
+        )
         .run();
 }

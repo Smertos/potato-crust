@@ -12,6 +12,7 @@ opt-level = 3
 [dependencies]
 anyhow = "1.0.68"
 bevy = { version = "0.9.1", features = ["bevy_ui", "dynamic", "filesystem_watcher"] }
+bevy_asset_loader = "0.14.1"
 bitmask-enum = "2.1.0"
 num_enum = "0.5.7"
 rayon = "1.6.1"

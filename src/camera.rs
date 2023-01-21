@@ -28,7 +28,7 @@ impl CameraController {
 
 fn setup_camera(mut commands: Commands) {
     let camera_3d_bundle = Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 0.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0.0, 0.0, 20.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..Default::default()
     };
     let camera_controller = CameraController::new(4.0, 0.4);
@@ -121,7 +121,7 @@ pub fn camera_input(
         }
 
         // TODO: move to UI
-        debug!("X: {:.2}, Y: {:.2}, Z: {:.2}", transform.translation.x, transform.translation.y, transform.translation.z);
+        // debug!("X: {:.2}, Y: {:.2}, Z: {:.2}", transform.translation.x, transform.translation.y, transform.translation.z);
     }
 }
 
