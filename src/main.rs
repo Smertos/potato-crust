@@ -37,7 +37,7 @@ fn setup(
     let debug_material = block_materials.add(debug_texture.into());
 
     let block_material = block_texture_registry
-        .get("dirt")
+        .get("grass-side")
         .and_then(|block_texture| block_textures.get(&block_texture))
         .map(|block_texture| block_texture.material.clone())
         .unwrap_or_else(|| debug_material.clone());
