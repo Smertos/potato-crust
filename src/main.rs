@@ -14,7 +14,7 @@ mod material;
 mod registry;
 mod states;
 
-use crate::assets::{GameAssetsLabel, GameAssetsPlugin};
+use crate::assets::{GameAssetsPlugin};
 use crate::block_mesh::{BlockMeshStorage, BlockSide};
 use crate::block_texture::BlockTexture;
 use crate::camera::GameplayCameraPlugin;
@@ -116,7 +116,7 @@ fn main() {
         .add_plugin(GameplayCameraPlugin::default())
         .add_system_set(
             SystemSet::on_enter(GameState::InGame)
-                .with_system(setup.after(GameAssetsLabel::Loading)),
+                .with_system(setup),
         )
         .add_system_set(
             SystemSet::on_update(GameState::InGame)

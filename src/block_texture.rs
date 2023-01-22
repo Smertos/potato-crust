@@ -12,19 +12,19 @@ pub struct BlockTextureName(String);
 pub struct BlockTexture {
     pub name: BlockTextureName,
     pub material: Handle<BlockMaterial>,
-    pub texture: Handle<Image>,
+    pub texture_image: Handle<Image>,
 }
 
 impl BlockTexture {
     pub fn new(
         name: impl Into<String>,
         material: Handle<BlockMaterial>,
-        texture: Handle<Image>,
+        texture_image: Handle<Image>,
     ) -> Self {
         Self {
             name: BlockTextureName(name.into()),
             material,
-            texture,
+            texture_image,
         }
     }
 }
