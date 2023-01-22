@@ -1,7 +1,7 @@
+use crate::block_texture::BlockTexture;
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::utils::HashMap;
-use crate::block_texture::BlockTexture;
 
 #[derive(Clone, Resource, TypeUuid)]
 #[uuid = "2c73ad47-e339-4d83-b182-afa17c929eb8"]
@@ -28,7 +28,11 @@ impl AtlasManager {
         const ATLAS_SIDE_SIZE: usize = 16;
         const ATLAS_TOTAL_SIZE: usize = ATLAS_SIDE_SIZE * ATLAS_SIDE_SIZE;
 
-        debug!("{0} textures selected for atlases sized {1}x{1}", texture_images.len(), side_size);
+        debug!(
+            "{0} textures selected for atlases sized {1}x{1}",
+            texture_images.len(),
+            side_size
+        );
 
         let atlas_size = ATLAS_SIDE_SIZE as f32 * side_size as f32;
         let atlas_size: Vec2 = Vec2::new(atlas_size, atlas_size);
@@ -56,9 +60,9 @@ impl AtlasManager {
                         Some(atlas_list) => atlas_list.push(atlas_handle),
                         None => {
                             self.atlases.insert(side_size, vec![atlas_handle]);
-                        },
+                        }
                     };
-                },
+                }
                 Err(err) => error!("Failed to build texture atlas: {}", err),
             };
         }
@@ -86,7 +90,7 @@ impl AtlasManager {
                 Some(category_list) => category_list.push(block_texture),
                 None => {
                     categorized_textures.insert(texture_size, vec![block_texture]);
-                },
+                }
             };
         }
 

@@ -1,4 +1,3 @@
-use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use input::mouse_grab_input;
@@ -9,16 +8,18 @@ mod block_mesh;
 mod block_texture;
 mod camera;
 mod debug_texture;
+mod fps;
 mod input;
 mod material;
 mod registry;
 mod states;
 
-use crate::assets::{GameAssetsPlugin};
+use crate::assets::GameAssetsPlugin;
 use crate::block_mesh::{BlockMeshStorage, BlockSide};
 use crate::block_texture::BlockTexture;
 use crate::camera::GameplayCameraPlugin;
 use crate::debug_texture::uv_debug_texture;
+use crate::fps::GameFpsCounterPlugin;
 use crate::input::keyboard_input;
 use crate::material::block_material::{BlockBundle, BlockMaterial};
 use crate::registry::BlockTextureRegistry;
@@ -109,15 +110,11 @@ fn main() {
                 })
                 .set(ImagePlugin::default_nearest()),
         )
-        .add_plugin(LogDiagnosticsPlugin::default())
-        // .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(MaterialPlugin::<BlockMaterial>::default())
         .add_plugin(GameAssetsPlugin)
+        .add_plugin(GameFpsCounterPlugin)
         .add_plugin(GameplayCameraPlugin::default())
-        .add_system_set(
-            SystemSet::on_enter(GameState::InGame)
-                .with_system(setup),
-        )
+        .add_system_set(SystemSet::on_enter(GameState::InGame).with_system(setup))
         .add_system_set(
             SystemSet::on_update(GameState::InGame)
                 .with_system(mouse_grab_input)

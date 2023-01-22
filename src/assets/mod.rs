@@ -1,16 +1,21 @@
 mod atlas_manager;
 
-use std::path::Path;
+use crate::assets::atlas_manager::AtlasManager;
 use bevy::app::AppExit;
 use bevy::asset::LoadState;
 use bevy::prelude::*;
-use crate::assets::atlas_manager::AtlasManager;
+use bevy::reflect::TypeUuid;
+use std::path::Path;
 
 use crate::block_mesh::BlockMeshStorage;
 use crate::block_texture::BlockTexture;
 use crate::material::block_material::BlockMaterial;
 use crate::registry::BlockTextureRegistry;
 use crate::states::GameState;
+
+#[derive(Clone, Resource, TypeUuid)]
+#[uuid = "ef87a222-64f6-4add-8a53-108dd0eb9425"]
+pub struct UiFont(pub Handle<Font>);
 
 pub struct GameAssetsPlugin;
 
@@ -24,15 +29,14 @@ impl Plugin for GameAssetsPlugin {
             .add_system_set(
                 SystemSet::on_enter(GameState::LoadingAssets)
                     .with_system(load_all_textures)
-                    .with_system(load_block_meshes),
+                    .with_system(load_block_meshes)
+                    .with_system(load_ui_font),
             )
             .add_system_set(
-                SystemSet::on_update(GameState::LoadingAssets)
-                    .with_system(check_states_loaded),
+                SystemSet::on_update(GameState::LoadingAssets).with_system(check_states_loaded),
             )
             .add_system_set(
-                SystemSet::on_enter(GameState::GeneratingAtlases)
-                    .with_system(generate_atlases)
+                SystemSet::on_enter(GameState::GeneratingAtlases).with_system(generate_atlases),
             );
     }
 }
@@ -60,11 +64,7 @@ pub fn generate_atlases(
     block_textures: Res<Assets<BlockTexture>>,
     mut state: ResMut<State<GameState>>,
 ) {
-    atlas_manager.process_textures(
-        &mut texture_atlases,
-        &mut images,
-        &block_textures,
-    );
+    atlas_manager.process_textures(&mut texture_atlases, &mut images, &block_textures);
 
     // TODO: Figure out better way to go to next state
     if let Err(err) = state.overwrite_set(GameState::InGame) {
@@ -137,4 +137,11 @@ pub fn load_block_meshes(
     mut block_mesh_storage: ResMut<BlockMeshStorage>,
 ) {
     block_mesh_storage.generate_meshes(&mut meshes);
+}
+
+pub fn load_ui_font(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let ui_font_handle = asset_server.load("fonts/Inter-Regular.ttf");
+    let ui_font = UiFont(ui_font_handle);
+
+    commands.insert_resource(ui_font);
 }
