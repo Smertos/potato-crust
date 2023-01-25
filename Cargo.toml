@@ -1,20 +1,9 @@
-[package]
-name = "potato-crust-bevy"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["asset-loader", "client"]
+default-members = ["client"]
+resolver = "2"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 # Enable high optimizations for dependencies (incl. Bevy), but not for our code:
 [profile.dev.package."*"]
 opt-level = 3
-
-[dependencies]
-anyhow = "1.0.68"
-bevy = { version = "0.9.1", features = ["bevy_ui", "dynamic", "filesystem_watcher"] }
-bevy_asset_loader = "0.14.1"
-bitmask-enum = "2.1.0"
-num_enum = "0.5.7"
-rayon = "1.6.1"
-thiserror = "1.0.38"
-tracing = "0.1.37"

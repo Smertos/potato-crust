@@ -1,5 +1,6 @@
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
+use bevy::window::PresentMode;
 use input::mouse_grab_input;
 use tracing::Level;
 
@@ -100,6 +101,14 @@ fn main() {
     App::new()
         .add_plugins(
             DefaultPlugins
+                .set(WindowPlugin {
+                    window: WindowDescriptor {
+                        title: "Potato Crust".into(),
+                        // present_mode: PresentMode::AutoNoVsync,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                })
                 .set(LogPlugin {
                     filter: "info,wgpu_core=warn,wgpu_hal=warn,naga=warn,potato_crust=trace".into(),
                     level: Level::DEBUG,

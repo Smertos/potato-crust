@@ -38,7 +38,7 @@ pub fn setup_fps_counter(mut commands: Commands, ui_font: Res<UiFont>) {
 }
 
 fn update_fps_counter(
-    diagnostics: ResMut<Diagnostics>,
+    diagnostics: Res<Diagnostics>,
     mut query: Query<(&mut Text, With<FpsCounterLabel>)>,
 ) {
     let diagnostic = diagnostics

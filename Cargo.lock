@@ -124,6 +124,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "asset-loader"
+version = "0.1.0"
+
+[[package]]
 name = "async-channel"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1008,6 +1012,20 @@ dependencies = [
  "glob",
  "libc",
  "libloading",
+]
+
+[[package]]
+name = "client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bevy",
+ "bevy_asset_loader",
+ "bitmask-enum",
+ "num_enum",
+ "rayon",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]
@@ -2410,20 +2428,6 @@ dependencies = [
  "crc32fast",
  "flate2",
  "miniz_oxide",
-]
-
-[[package]]
-name = "potato-crust-bevy"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bevy",
- "bevy_asset_loader",
- "bitmask-enum",
- "num_enum",
- "rayon",
- "thiserror",
- "tracing",
 ]
 
 [[package]]
