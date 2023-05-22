@@ -1,16 +1,21 @@
-mod atlas_manager;
+pub mod atlas_manager;
+pub mod registry;
+pub mod textures;
 
-use crate::assets::atlas_manager::AtlasManager;
+use crate::assets::textures::atlas_texture_info::AtlasTextureInfo;
 use bevy::app::AppExit;
 use bevy::asset::LoadState;
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use std::path::Path;
 
+use self::atlas_manager::AtlasManager;
+use self::registry::{AtlasTextureInfoRegistry, BlockTextureRegistry};
+use self::textures::block_texture::BlockTexture;
+
 use crate::block_mesh::BlockMeshStorage;
-use crate::block_texture::BlockTexture;
+use crate::material::block_atlas_material::BlockAtlasMaterial;
 use crate::material::block_material::BlockMaterial;
-use crate::registry::BlockTextureRegistry;
 use crate::states::GameState;
 
 #[derive(Clone, Resource, TypeUuid)]
@@ -22,56 +27,57 @@ pub struct GameAssetsPlugin;
 impl Plugin for GameAssetsPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(BlockTextureRegistry::default())
+            .insert_resource(AtlasTextureInfoRegistry::default())
             .insert_resource(BlockMeshStorage::new())
             .insert_resource(AtlasManager::new())
+            .add_asset::<AtlasTextureInfo>()
+            .add_asset::<BlockAtlasMaterial>()
             .add_asset::<BlockTexture>()
-            .add_state(GameState::LoadingAssets)
-            .add_system_set(
-                SystemSet::on_enter(GameState::LoadingAssets)
-                    .with_system(load_all_textures)
-                    .with_system(load_block_meshes)
-                    .with_system(load_ui_font),
+            .add_state::<GameState>()
+            .add_systems(
+                (load_all_textures, load_block_meshes, load_ui_font)
+                    .chain()
+                    .in_schedule(OnEnter(GameState::LoadingAssets)),
             )
-            .add_system_set(
-                SystemSet::on_update(GameState::LoadingAssets).with_system(check_states_loaded),
-            )
-            .add_system_set(
-                SystemSet::on_enter(GameState::GeneratingAtlases).with_system(generate_atlases),
-            );
+            .add_system(check_states_loaded.in_set(OnUpdate(GameState::LoadingAssets)))
+            .add_system(generate_atlases.in_schedule(OnEnter(GameState::GeneratingAtlases)));
     }
 }
 
 pub fn check_states_loaded(
     asset_server: Res<AssetServer>,
     block_textures: Res<Assets<BlockTexture>>,
-    mut state: ResMut<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
     let handles = block_textures.iter().map(|(_, x)| x.texture_image.id());
 
     if let LoadState::Loaded = asset_server.get_group_load_state(handles) {
-        if let Err(err) = state.set(GameState::GeneratingAtlases) {
-            error!("Game state set error: {}", err);
-        } else {
-            debug!("All assets are loaded!")
-        }
+        next_state.set(GameState::GeneratingAtlases);
+        debug!("All assets are loaded!")
     }
 }
 
 pub fn generate_atlases(
+    mut commands: Commands,
     mut atlas_manager: ResMut<AtlasManager>,
+    mut atlas_texture_info_registry: ResMut<AtlasTextureInfoRegistry>,
+    mut atlas_texture_infos: ResMut<Assets<AtlasTextureInfo>>,
     mut images: ResMut<Assets<Image>>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     block_textures: Res<Assets<BlockTexture>>,
-    mut state: ResMut<State<GameState>>,
+    mut next_state: ResMut<NextState<GameState>>,
 ) {
-    atlas_manager.process_textures(&mut texture_atlases, &mut images, &block_textures);
+    atlas_manager.process_textures(
+        commands,
+        &mut atlas_texture_info_registry,
+        &mut atlas_texture_infos,
+        &mut texture_atlases,
+        &mut images,
+        &block_textures,
+    );
 
-    // TODO: Figure out better way to go to next state
-    if let Err(err) = state.overwrite_set(GameState::InGame) {
-        error!("Game state set error: {}", err);
-    } else {
-        debug!("All atlases have been assembled!")
-    }
+    next_state.set(GameState::InGame);
+    debug!("All atlases have been assembled!")
 }
 
 pub fn load_all_textures(

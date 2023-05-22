@@ -1,76 +1,118 @@
-use crate::block_texture::BlockTexture;
+use crate::assets::registry::AtlasTextureInfoRegistry;
+use crate::assets::textures::atlas_texture_info::AtlasTextureInfo;
+use crate::material::block_atlas_material::BlockAtlasMaterial;
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::utils::HashMap;
 
+use super::textures::block_texture::BlockTexture;
+
 #[derive(Clone, Resource, TypeUuid)]
 #[uuid = "2c73ad47-e339-4d83-b182-afa17c929eb8"]
 pub struct AtlasManager {
-    atlases: HashMap<u32, Vec<Handle<TextureAtlas>>>,
+    atlases: HashMap<u32, Handle<TextureAtlas>>,
 }
 
 impl AtlasManager {
-    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {
             atlases: HashMap::new(),
         }
     }
 
-    #[allow(dead_code)]
+    fn build_atlas_textures(
+        &self,
+        commands: &mut Commands,
+        atlas_texture_info_registry: &mut ResMut<AtlasTextureInfoRegistry>,
+        atlas_texture_infos: &mut ResMut<Assets<AtlasTextureInfo>>,
+        atlas: &TextureAtlas,
+        atlas_handle: &Handle<TextureAtlas>,
+        texture_images: Vec<&BlockTexture>,
+    ) {
+        commands.insert_resource(BlockAtlasMaterial::new(atlas));
+
+        for (_, block_texture) in texture_images.iter().enumerate() {
+            let index = atlas
+                .get_texture_index(&block_texture.texture_image)
+                .expect("must contain expected texture");
+
+            let atlas_texture_info =
+                AtlasTextureInfo::new(&atlas_handle, &block_texture.name.0, index);
+            let atlas_texture_info_handle = atlas_texture_infos.add(atlas_texture_info);
+
+            atlas_texture_info_registry
+                .insert(&block_texture.name.0, atlas_texture_info_handle)
+                .expect("could not insert atlas texture info into registry");
+        }
+    }
+
     fn build_category_atlases(
         &mut self,
-        side_size: u32,
+        commands: &mut Commands,
+        texture_side_size: u32,
+        atlas_texture_info_registry: &mut ResMut<AtlasTextureInfoRegistry>,
+        atlas_texture_infos: &mut ResMut<Assets<AtlasTextureInfo>>,
         texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
         mut images: &mut ResMut<Assets<Image>>,
         texture_images: Vec<&BlockTexture>,
     ) {
-        const ATLAS_SIDE_SIZE: usize = 16;
-        const ATLAS_TOTAL_SIZE: usize = ATLAS_SIDE_SIZE * ATLAS_SIDE_SIZE;
+        let mut atlas_axis_amount: usize = 32;
+        let mut atlas_total_amount: usize = atlas_axis_amount * atlas_axis_amount;
+
+        while texture_images.len() > atlas_total_amount {
+            atlas_axis_amount *= 2;
+            atlas_total_amount = atlas_axis_amount * atlas_axis_amount;
+        }
 
         debug!(
             "{0} textures selected for atlases sized {1}x{1}",
             texture_images.len(),
-            side_size
+            texture_side_size
         );
 
-        let atlas_size = ATLAS_SIDE_SIZE as f32 * side_size as f32;
+        let atlas_size = atlas_axis_amount as f32 * texture_side_size as f32;
         let atlas_size: Vec2 = Vec2::new(atlas_size, atlas_size);
 
-        for texture_chunk in texture_images.chunks(ATLAS_TOTAL_SIZE) {
-            let mut builder = TextureAtlasBuilder::default()
-                .initial_size(atlas_size)
-                .max_size(atlas_size);
+        let mut builder = TextureAtlasBuilder::default()
+            .initial_size(atlas_size)
+            .max_size(atlas_size);
 
-            for texture in texture_chunk {
-                let Some(texture_image) = images.get(&texture.texture_image) else {
-                    warn!("Texture image for handle {:?} could not be found", &texture.texture_image.id());
-                    continue;
-                };
-
-                builder.add_texture(texture.texture_image.clone(), texture_image);
-            }
-
-            match builder.finish(&mut images) {
-                Ok(atlas) => {
-                    let atlas_handle = texture_atlases.add(atlas);
-
-                    match self.atlases.get_mut(&side_size) {
-                        // TODO: perhaps unload all used textures
-                        Some(atlas_list) => atlas_list.push(atlas_handle),
-                        None => {
-                            self.atlases.insert(side_size, vec![atlas_handle]);
-                        }
-                    };
-                }
-                Err(err) => error!("Failed to build texture atlas: {}", err),
+        for texture in &texture_images {
+            let Some(texture_image) = images.get(&texture.texture_image) else {
+                warn!("Texture image for handle {:?} could not be found", &texture.name.0);
+                continue;
             };
+
+            debug!("adding texture to atlas: {}", &texture.name.0);
+
+            builder.add_texture(texture.texture_image.clone(), texture_image);
         }
+
+        match builder.finish(&mut images) {
+            Ok(atlas) => {
+                let atlas_copy = atlas.clone();
+                let atlas_handle = texture_atlases.add(atlas);
+
+                self.build_atlas_textures(
+                    commands,
+                    atlas_texture_info_registry,
+                    atlas_texture_infos,
+                    &atlas_copy,
+                    &atlas_handle,
+                    texture_images,
+                );
+
+                self.atlases.insert(texture_side_size, atlas_handle);
+            }
+            Err(err) => error!("Failed to build texture atlas: {}", err),
+        };
     }
 
-    #[allow(dead_code)]
     pub fn process_textures(
         &mut self,
+        mut commands: Commands,
+        atlas_texture_info_registry: &mut ResMut<AtlasTextureInfoRegistry>,
+        atlas_texture_infos: &mut ResMut<Assets<AtlasTextureInfo>>,
         texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
         images: &mut ResMut<Assets<Image>>,
         block_textures: &Res<Assets<BlockTexture>>,
@@ -96,7 +138,10 @@ impl AtlasManager {
 
         for (side_size, texture_images) in categorized_textures.iter() {
             self.build_category_atlases(
+                &mut commands,
                 side_size.clone(),
+                atlas_texture_info_registry,
+                atlas_texture_infos,
                 texture_atlases,
                 images,
                 texture_images.to_vec(),

@@ -1,5 +1,5 @@
 [workspace]
-members = ["asset-loader", "client"]
+members = ["asset_loader", "client"]
 default-members = ["client"]
 resolver = "2"
 

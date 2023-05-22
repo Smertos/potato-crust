@@ -12,10 +12,8 @@ pub struct GameFpsCounterPlugin;
 impl Plugin for GameFpsCounterPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(FrameTimeDiagnosticsPlugin::default())
-            .add_system_set(SystemSet::on_enter(GameState::InGame).with_system(setup_fps_counter))
-            .add_system_set(
-                SystemSet::on_update(GameState::InGame).with_system(update_fps_counter),
-            );
+            .add_system(setup_fps_counter.in_schedule(OnEnter(GameState::InGame)))
+            .add_system(update_fps_counter.in_set(OnUpdate(GameState::InGame)));
     }
 }
 

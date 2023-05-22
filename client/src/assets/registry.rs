@@ -4,7 +4,8 @@ use bevy::reflect::TypeUuid;
 use bevy::utils::HashMap;
 use thiserror::Error;
 
-use crate::block_texture::BlockTexture;
+use super::textures::atlas_texture_info::AtlasTextureInfo;
+use super::textures::block_texture::BlockTexture;
 
 #[derive(Debug, Error)]
 pub enum RegistryError {
@@ -76,19 +77,14 @@ macro_rules! make_registry {
     };
 }
 
-// TODO: automate struct & Default impl below with a macro
+make_registry!(
+    AtlasTextureInfoRegistry,
+    AtlasTextureInfo,
+    "189e6b31-e392-46d5-a6f0-d2a86808c94d"
+);
+
 make_registry!(
     BlockTextureRegistry,
     BlockTexture,
     "19d77a98-2675-4306-ab3c-ddc39ada1ffd"
 );
-
-// #[derive(Resource, TypeUuid)]
-// #[uuid = "19d77a98-2675-4306-ab3c-ddc39ada1ffd"]
-// pub struct BlockTextureRegistry(pub Registry<BlockTexture>);
-//
-// impl<T: Asset> Default for BlockTextureRegistry {
-//     fn default() -> Self {
-//         BlockTextureRegistry(Registry::<T>::new(None))
-//     }
-// }

@@ -1,6 +1,121 @@
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::render::mesh::{Indices, PrimitiveTopology};
+
+// use crate::material::block_material::{BlockBundle, BlockMaterial};
+
+// pub enum BlockSide {
+//     Front,
+//     Back,
+//     Left,
+//     Right,
+//     Top,
+//     Bottom,
+// }
+//
+// impl BlockSide {
+//     pub fn to_side_index(&self) -> usize {
+//         match self {
+//             BlockSide::Front => 0,
+//             BlockSide::Back => 1,
+//             BlockSide::Left => 2,
+//             BlockSide::Right => 3,
+//             BlockSide::Top => 4,
+//             BlockSide::Bottom => 5,
+//         }
+//     }
+// }
+
+// #[derive(Bundle, TypeUuid)]
+// #[uuid = "ebf45553-fdc9-4c59-84da-ee6ccd336afc"]
+// pub struct BlockMesh {
+//     #[bundle]
+//     front_mesh_bundle: BlockMeshBundle,
+//     #[bundle]
+//     back_mesh_bundle: BlockMeshBundle,
+//     #[bundle]
+//     left_mesh_bundle: BlockMeshBundle,
+//     #[bundle]
+//     right_mesh_bundle: BlockMeshBundle,
+//     #[bundle]
+//     top_mesh_bundle: BlockMeshBundle,
+//     #[bundle]
+//     bottom_mesh_bundle: BlockMeshBundle,
+// }
+//
+// impl BlockMesh {
+//     pub const BLOCK_QUAD: Mesh = {
+//         let vertices = [
+//             ([0.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0]),
+//             ([0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0]),
+//             ([1.0, 1.0, 0.0], [0.0, 0.0, 1.0], [1.0, 0.0]),
+//             ([1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [1.0, 1.0]),
+//         ];
+//
+//         let indices = Indices::U32(vec![0, 2, 1, 0, 3, 2]);
+//
+//         let positions: Vec<_> = vertices.iter().map(|(p, _, _)| *p).collect();
+//         let normals: Vec<_> = vertices.iter().map(|(_, n, _)| *n).collect();
+//         let uvs: Vec<_> = vertices.iter().map(|(_, _, uv)| *uv).collect();
+//
+//         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+//         mesh.set_indices(Some(indices));
+//         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
+//         mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
+//         mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
+//         mesh
+//     };
+//
+//     pub fn new(quad_handle: &Handle<Mesh>, position: Vec3) -> Self {
+//         let front_mesh_bundle = Self::create_mesh_bundle(quad_mesh_handle, position.clone(), BlockSide::Front);
+//         let back_mesh_bundle = Self::create_mesh_bundle(quad_mesh_handle, position.clone(), BlockSide::Back);
+//         let left_mesh_bundle = Self::create_mesh_bundle(quad_mesh_handle, position.clone(), BlockSide::Left);
+//         let right_mesh_bundle = Self::create_mesh_bundle(quad_mesh_handle, position.clone(), BlockSide::Right);
+//         let top_mesh_bundle = Self::create_mesh_bundle(quad_mesh_handle, position.clone(), BlockSide::Top);
+//         let bottom_mesh_bundle = Self::create_mesh_bundle(quad_mesh_handle, position.clone(), BlockSide::Bottom);
+//
+//         Self {
+//             front_mesh_bundle,
+//             back_mesh_bundle,
+//             left_mesh_bundle,
+//             right_mesh_bundle,
+//             top_mesh_bundle,
+//             bottom_mesh_bundle,
+//         }
+//     }
+//
+//     pub fn spawn_block(
+//         commands: &mut Commands,
+//         quad_mesh_handle: &Handle<Mesh>,
+//         position: Vec3
+//     ) {
+//         let block = BlockMesh::new(quad_mesh_handle, position);
+//
+//         commands.spawn(block);
+//     }
+//
+//     pub fn create_side(
+//         quad_mesh_handle: &Handle<Mesh>,
+//         materials: &mut Assets<BlockMaterial>,
+//         texture_handle: &Handle<Imawe>,
+//         position: Vec3,
+//         block_side: BlockSide,
+//     ) -> BlockBundle {
+//         let block_material: BlockMaterial = BlockMaterial::from();
+//         let block_material = materials.add(block_material);
+//
+//         BlockBundle {
+//             mesh: quad_mesh_handle.clone(),
+//             material: block_material,
+//             transform: Transform::from_translation(position),
+//             ..Default::default()
+//         }
+//     }
+// }
+
+// use bevy::prelude::*;
+// use bevy::reflect::TypeUuid;
+// use bevy::render::mesh::{Indices, PrimitiveTopology};
 use bevy::utils::HashMap;
 use bitmask_enum::bitmask;
 use rayon::prelude::*;
