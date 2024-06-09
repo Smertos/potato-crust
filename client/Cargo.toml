@@ -6,16 +6,20 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.68"
-bevy = { version = "0.10.0", features = ["bevy_ui", "dynamic_linking", "filesystem_watcher"] }
-bevy_asset_loader = "0.15.0"
-bevy_editor_pls = "0.3.0"
-bitmask-enum = "2.1.0"
-block-mesh = "0.2.0"
-bytemuck = { version = "1.13.1", features = ["derive"] }
-image = "0.24.5"
-num_enum = "0.5.7"
-rand = "0.8.5"
-rayon = "1.6.1"
-thiserror = "1.0.38"
-tracing = "0.1.37"
+anyhow = "1.0.86"
+bevy = { version = "0.14.0-rc.2", features = ["bevy_ui", "dynamic_linking", "file_watcher", "bevy_dev_tools"] }
+bevy_asset_loader = "0.20.2"
+bevy_editor_pls = "0.8.1"
+bitmask-enum = "2.2.4"
+block-mesh = { git = "https://github.com/parzivale/block-mesh-rs", branch = "main" }
+bytemuck = { version = "1.16.0", features = ["derive"] }
+color-eyre = "0.6.3"
+dashmap = "5.5.3"
+fasthash = "0.4.0"
+image = "0.25.1"
+num_enum = "0.7.2"
+rand = "0.9.0-alpha.1"
+rayon = "1.10.0"
+strum = { version = "0.26.2", features = ["derive"] }
+thiserror = "1.0.61"
+tracing = "0.1.40"

@@ -5,14 +5,15 @@ use crate::common::VersionId;
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct VersionManifest {
-    id: VersionId,
     #[serde(rename = "assetIndex")]
     asset_index: AssetIndex,
+    assets: String, // number string
+    id: VersionId,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct AssetIndex {
-    id: String,
+    id: String, // number string
     sha1: Digest,
     size: u64,
     #[serde(rename = "totalSize")]
