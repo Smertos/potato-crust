@@ -1,31 +1,17 @@
 # Potato Crust
 
-This project is my attempt to create a Minecraft clone and learn Bevy along the way.
+Honestly, don't expect anything to work. I rarely update this project, and I'm not even sure if it's even functional at
+times.
+
+This project is my attempt to create a mini-Minecraft clone and learn Bevy along the way.
 
 # Goals
 
-For now, this project is purely self-educational one, so I'm trying to avoid scope creep by limiting my plans.
+* chunk-based world
+* some basic interaction with the world (like breaking/placing blocks)
+* maybe a bit of world generation
+* how about some TNT going boom-boom? (could use it to test world interaction performance)
+* physics based character controller (simple vert pill collider with camera attached, no player models)
+* if it comes to it, inventory system wouldn't hurt
 
-### Rendering
-
-* Rendering worlds pre-generated in Minecraft
-* Render player's hand in first person view
-* Render players & entities
-
-### Gameplay
-
-* Breaking and placing blocks
-* Inventory system
-* Hotbar
-* Use Minecraft's assets to provide all the blocks & whistles
-
-### Unique stuff
-* Auto-download assets from some fixed version
-
-### Multiplayer
-
-I'm not sure if I'm going to tackle this.
-My current initial plan is only doing singleplayer implementation.
-
-### Anything else?
-No, but I might extend this list in the future if anything comes to mind or if most of the features above get implemented.
+not planing on integrating with MC's assets or data formats, but might reconsider way later.
