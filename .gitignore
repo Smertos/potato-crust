@@ -1,4 +1,4 @@
 .idea
 .vscode
 /target
-rust-ice*
+rustc-ice*

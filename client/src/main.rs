@@ -1,16 +1,19 @@
+use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
+use bevy::prelude::*;
+
+use crate::assets::GameAssetsPlugin;
+use crate::camera::CameraControllerPlugin;
+use crate::material::BlockAtlasMaterialPlugin;
+use crate::setup::SetupPlugin;
+use crate::world::WorldPlugin;
+
 mod assets;
 mod setup;
 mod material;
 mod camera;
 mod block_info;
 mod world;
-
-use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin};
-use bevy::prelude::*;
-use crate::assets::GameAssetsPlugin;
-use crate::camera::CameraControllerPlugin;
-use crate::material::BlockAtlasMaterialPlugin;
-use crate::setup::SetupPlugin;
+mod player;
 
 fn main() {
     App::new()
@@ -28,5 +31,6 @@ fn main() {
         .add_plugins(GameAssetsPlugin)
         .add_plugins(BlockAtlasMaterialPlugin)
         .add_plugins(SetupPlugin)
+        .add_plugins(WorldPlugin)
         .run();
 }

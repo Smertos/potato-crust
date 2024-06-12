@@ -9,7 +9,6 @@ edition = "2021"
 anyhow = "1.0.86"
 bevy = { version = "0.14.0-rc.2", features = ["bevy_ui", "dynamic_linking", "file_watcher", "bevy_dev_tools"] }
 bevy_asset_loader = "0.20.2"
-bevy_editor_pls = "0.8.1"
 bitmask-enum = "2.2.4"
 block-mesh = { git = "https://github.com/parzivale/block-mesh-rs", branch = "main" }
 bytemuck = { version = "1.16.0", features = ["derive"] }

@@ -8,6 +8,9 @@ use bevy::render::render_resource::{
 pub const ATTRIBUTE_ATLAS_TEXTURE_INDEX: MeshVertexAttribute =
     MeshVertexAttribute::new("AtlasTextureIndex", 6235423423, VertexFormat::Uint32);
 
+#[derive(Resource)]
+pub struct GlobalBlockAtlasMaterial(pub Handle<BlockAtlasMaterial>);
+
 #[derive(Asset, AsBindGroup, Clone, Debug, TypePath)]
 pub struct BlockAtlasMaterial {
     #[uniform(100)]
